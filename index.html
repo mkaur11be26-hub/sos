@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0f1f">
+<title>SafeWalk · Night safety companion</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;800&display=swap">
+<style>
+:root{--bg:#0b0f1f;--bg2:#161c3a;--ink:#eef1ff;--mute:#9aa3c7;--card:rgba(255,255,255,.07);--line:rgba(255,255,255,.12);--sos:#ff3b5c;--ok:#3ee6c1;--amb:#ffc15e;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);color-scheme:dark}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eef1ff;--bg2:#dfe5ff;--ink:#12183a;--mute:#566091;--card:rgba(255,255,255,.7);--line:rgba(18,24,58,.14);--ok:#0a9c80;color-scheme:light}}
+:root[data-theme="light"]{--bg:#eef1ff;--bg2:#dfe5ff;--ink:#12183a;--mute:#566091;--card:rgba(255,255,255,.7);--line:rgba(18,24,58,.14);--ok:#0a9c80;color-scheme:light}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:radial-gradient(ellipse at 50% 0,var(--bg2),var(--bg) 65%) fixed;color:var(--ink);font:17px/1.45 Outfit,system-ui,sans-serif;min-height:100dvh;overflow-x:hidden}
+.app{max-width:460px;margin:0 auto;min-height:100dvh;padding:14px 18px calc(96px + env(safe-area-inset-bottom,0px));position:relative}
+header{display:flex;justify-content:space-between;align-items:center}
+.brand{font:800 22px Outfit;display:flex;gap:8px;align-items:center}.brand i{width:28px;height:28px;border-radius:9px;background:linear-gradient(135deg,var(--ok),#5b8cff);display:inline-grid;place-items:center;font-style:normal;font-size:15px}
+.chip{font-size:13px;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:5px 12px;color:var(--mute)}.chip.on{color:var(--ok);border-color:var(--ok)}
+h2{font:800 28px/1.1 Outfit;margin:18px 0 6px}.sub{color:var(--mute);margin:0 0 16px;font-size:15px}
+.scr{display:none}.scr.on{display:block;animation:up .35s ease}@keyframes up{from{opacity:0;transform:translateY(10px)}}
+.sosw{position:relative;width:min(78vw,300px);aspect-ratio:1;margin:20px auto 8px}
+.sosw svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.pulse{position:absolute;inset:6%;border-radius:50%;background:var(--sos);opacity:.35;animation:pl 2s ease-out infinite}.pulse.b{animation-delay:1s}
+@keyframes pl{to{transform:scale(1.28);opacity:0}}
+#sos{position:absolute;inset:11%;border-radius:50%;border:0;background:radial-gradient(circle at 35% 30%,#ff7a90,var(--sos) 55%,#c4163a);color:#fff;font:800 56px Outfit;letter-spacing:.04em;box-shadow:0 18px 50px -10px var(--sos),inset 0 -8px 18px rgba(0,0,0,.25);cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+#sos small{display:block;font:500 13px Outfit;letter-spacing:0;opacity:.9}
+.hint{text-align:center;color:var(--mute);font-size:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;text-align:left;color:var(--ink);font:600 15px Outfit;cursor:pointer;backdrop-filter:blur(10px);text-decoration:none;display:block}.tile span{display:block;font-size:24px;margin-bottom:4px}.tile small{display:block;color:var(--mute);font-weight:400;font-size:13px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px;backdrop-filter:blur(10px)}
+label{display:block;font-size:13px;color:var(--mute);margin:10px 0 4px}
+input,select{width:100%;font:inherit;color:var(--ink);background:rgba(127,127,160,.14);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--ok);outline-offset:2px}
+.btn{width:100%;border:0;border-radius:14px;padding:14px;font:700 16px Outfit;color:#06231d;background:var(--ok);cursor:pointer;margin-top:12px;text-decoration:none;display:block;text-align:center}.btn.r{background:var(--sos);color:#fff}.btn.g{background:var(--card);color:var(--ink);border:1px solid var(--line)}.btn.s{padding:9px 14px;width:auto;margin:0;font-size:14px;display:inline-block}
+.opts{display:flex;gap:8px;flex-wrap:wrap}.opt{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:8px 16px;font:600 14px Outfit;cursor:pointer}.opt[aria-pressed="true"]{background:var(--ok);color:#06231d;border-color:transparent}
+.ct{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}.ct:last-child{border:0}.av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#5b8cff,var(--ok));display:grid;place-items:center;font-weight:800;color:#06231d;flex:none}.ct div.w{flex:1;min-width:0}.ct small{color:var(--mute);display:block}
+.x{background:none;border:0;color:var(--mute);font-size:22px;cursor:pointer}
+.big{font:800 64px Outfit;text-align:center;letter-spacing:.02em;margin:8px 0}
+.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(460px,100%);display:flex;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(16px);border-top:1px solid var(--line);padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));z-index:20}
+.nav button{flex:1;background:none;border:0;color:var(--mute);font:600 12px Outfit;padding:6px;cursor:pointer;border-radius:12px}.nav button span{display:block;font-size:22px}.nav button[aria-selected="true"]{color:var(--ok)}
+.ov{position:fixed;inset:0;z-index:50;display:none;overflow:auto;padding:calc(18px + env(safe-area-inset-top,0px)) 18px calc(24px + env(safe-area-inset-bottom,0px))}.ov.on{display:block}
+#sosov{background:#3a0612;animation:fl 1s ease-in-out infinite alternate}@keyframes fl{to{background:#6a0b20}}
+.ovin{max-width:460px;margin:0 auto}
+.warn{font:800 34px Outfit;text-align:center;margin:6px 0}
+#fk,#chk{background:var(--bg)}
+.call{min-height:100dvh;display:flex;flex-direction:column;justify-content:space-between;align-items:center;text-align:center;padding:60px 0 50px}
+.call .av{width:110px;height:110px;font-size:46px;animation:pl2 1.4s infinite}@keyframes pl2{50%{box-shadow:0 0 0 22px rgba(62,230,193,.15)}}
+.call .acts{display:flex;gap:70px}.round{width:72px;height:72px;border-radius:50%;border:0;font-size:30px;cursor:pointer}.round.gr{background:#2ecc71}.round.rd{background:var(--sos)}
+.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translate(-50%,140px);background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:99px;z-index:70;transition:transform .35s cubic-bezier(.2,1.4,.4,1);max-width:90vw;text-align:center;font-weight:600;font-size:15px}.toast.on{transform:translate(-50%,0)}
+.note{font-size:13px;color:var(--mute)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="brand"><i>🛡</i>SafeWalk</div><span class="chip" id="loc">📍 Location off</span></header>
+
+<section class="scr on" id="home">
+<h2 id="hi">Walk safe tonight</h2><p class="sub">Hold the button for 2 seconds if you feel unsafe. We’ll sound an alarm and get your location ready for your trusted people.</p>
+<div class="sosw"><div class="pulse"></div><div class="pulse b"></div><svg viewBox="0 0 240 240"><circle cx="120" cy="120" r="108" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="8"/><circle id="ring" cx="120" cy="120" r="108" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-dasharray="678.6" stroke-dashoffset="678.6"/></svg><button id="sos" aria-label="Hold for two seconds to send SOS">SOS<small>HOLD 2 SEC</small></button></div>
+<p class="hint">Hold to avoid accidental alerts</p>
+<div class="grid2">
+<button class="tile" data-go="walk"><span>🚶</span>Start a safe walk<small>Timer with auto check-in</small></button>
+<button class="tile" data-go="fake"><span>📞</span>Fake call<small>Escape any situation</small></button>
+<button class="tile" id="shl"><span>📍</span>Share my location<small>No alarm, just tell them</small></button>
+<a class="tile" href="tel:112"><span>🚓</span>Call 112<small>National emergency</small></a></div></section>
+
+<section class="scr" id="walk"><h2>Safe walk</h2><p class="sub">Set a timer for your walk. If you don’t check in when it ends, SafeWalk raises the alarm.</p>
+<div class="box" id="wsetup"><label for="wd">Where are you going?</label><input id="wd" placeholder="e.g. Hostel from library"><label>How long will it take?</label><div class="opts" id="wm"></div><button class="btn" id="wgo">Start walk</button></div>
+<div class="box" id="wrun" style="display:none"><div class="note" id="wto" style="text-align:center"></div><div class="big" id="wt">00:00</div><button class="btn g" id="wtell">Tell my contacts I’m walking</button><button class="btn" id="wsafe">✓ I reached safely</button><button class="btn g" id="wplus">+5 minutes</button></div></section>
+
+<section class="scr" id="fake"><h2>Fake call</h2><p class="sub">Get a realistic incoming call so you can step away from an uncomfortable situation.</p>
+<div class="box"><label for="fnm">Who is calling?</label><input id="fnm" value="Mom"><label>Ring in</label><div class="opts" id="fd"></div><button class="btn" id="fgo">Start fake call</button></div></section>
+
+<section class="scr" id="people"><h2>Trusted people</h2><p class="sub">They get your SOS message. This list stays on your phone.</p>
+<div class="box" id="cl"></div>
+<div class="box"><b>Add a person</b><label for="cn">Name</label><input id="cn" placeholder="e.g. Papa"><label for="cp">Phone (with or without +91)</label><input id="cp" type="tel" inputmode="tel" placeholder="98765 43210"><label for="cr">Who are they?</label><select id="cr"><option>Parent</option><option>Friend</option><option>Hostel warden</option><option>Campus security</option><option>Other</option></select><button class="btn" id="cadd">Add person</button></div></section>
+
+<section class="scr" id="help"><h2>Help &amp; setup</h2><p class="sub">Emergency numbers (India) and your settings.</p>
+<div class="grid2"><a class="tile" href="tel:112"><span>🚨</span>112<small>All emergencies</small></a><a class="tile" href="tel:1091"><span>👩</span>1091<small>Women helpline</small></a><a class="tile" href="tel:100"><span>👮</span>100<small>Police</small></a><a class="tile" href="tel:181"><span>🤝</span>181<small>Women support</small></a></div>
+<div class="box" style="margin-top:14px"><label for="sn">Your name</label><input id="sn" placeholder="Shown in the SOS message"><label for="sc">Campus security phone</label><input id="sc" type="tel" inputmode="tel" placeholder="Add your campus control room number"><label>Alarm sound</label><div class="opts" id="sd"></div><button class="btn" id="ssv">Save settings</button></div>
+<div class="box"><b>Install on your phone</b><p class="note"><b>iPhone:</b> open in Safari, tap Share, then Add to Home Screen.<br><b>Android:</b> open in Chrome, tap the menu, then Install app or Add to Home screen.</p><button class="btn g" id="inst" style="display:none">Install app</button></div>
+<p class="note">SafeWalk helps you reach people fast. A web app cannot send messages by itself, so you tap Send for each person. It is not a replacement for calling 112 when you are in danger.</p></section>
+</div>
+
+<nav class="nav" id="nav"><button data-go="home" aria-selected="true"><span>🛡</span>SOS</button><button data-go="walk" aria-selected="false"><span>🚶</span>Walk</button><button data-go="fake" aria-selected="false"><span>📞</span>Fake call</button><button data-go="people" aria-selected="false"><span>👥</span>People</button><button data-go="help" aria-selected="false"><span>⚙️</span>Help</button></nav>
+
+<div class="ov" id="sosov"><div class="ovin"><div class="warn">🚨 SOS ACTIVE</div><p class="sub" style="text-align:center" id="sst">Getting your location…</p>
+<div class="box" id="smsg" style="font-size:14px"></div><div class="box" id="scl"></div>
+<a class="btn r" href="tel:112">📞 Call 112 now</a><button class="btn g" id="ssms">SMS everyone</button><button class="btn g" id="sshr">Share message…</button><button class="btn" id="ssafe">I’m safe. Stop alarm</button></div></div>
+<div class="ov" id="chk"><div class="ovin" style="text-align:center;padding-top:60px"><div class="warn">Are you okay?</div><p class="sub">Your walk timer ended. Check in, or SOS starts in</p><div class="big" id="cc">20</div><button class="btn" id="cok">✓ I’m okay</button></div></div>
+<div class="ov" id="fk"><div class="call"><div><div class="note">incoming call…</div><div class="av" id="fav">M</div><h2 id="fn2" style="margin-top:20px">Mom</h2><div id="ft" class="note">mobile</div></div><div class="acts" id="fac"><button class="round rd" id="fdec" aria-label="Decline">✕</button><button class="round gr" id="facc" aria-label="Accept">✆</button></div></div></div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+(function(){
+var S={name:"",contacts:[],campus:"",sound:true,walk:null};
+try{var r=localStorage.getItem("sw1");if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+var sv=function(){try{localStorage.setItem("sw1",JSON.stringify(S))}catch(e){}};
+var $=function(i){return document.getElementById(i)};
+var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
+function toast(m){var t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toast.h);toast.h=setTimeout(function(){t.classList.remove("on")},2600)}
+function go(id){document.querySelectorAll(".scr").forEach(function(x){x.classList.toggle("on",x.id===id)});document.querySelectorAll(".nav button").forEach(function(b){b.setAttribute("aria-selected",b.dataset.go===id)});scrollTo(0,0)}
+document.addEventListener("click",function(e){var b=e.target.closest("[data-go]");if(b)go(b.dataset.go)});
+function opts(id,list,def,cb){var el=$(id),cur=def;function d(){el.innerHTML="";list.forEach(function(o){var b=document.createElement("button");b.className="opt";b.type="button";b.textContent=o[0];b.setAttribute("aria-pressed",o[1]===cur);b.onclick=function(){cur=o[1];d();if(cb)cb(cur)};el.appendChild(b)})}d();return function(){return cur}}
+var wmin=opts("wm",[["5 min",5],["10 min",10],["15 min",15],["30 min",30],["45 min",45]],10);
+var fdel=opts("fd",[["Now",0],["10 sec",10],["30 sec",30]],10);
+var snd=opts("sd",[["On",true],["Off",false]],S.sound);
+var LOC=null;
+function norm(p){var d=String(p).replace(/\D/g,"");if(d.length===10)d="91"+d;return d}
+function link(){return LOC?"https://maps.google.com/?q="+LOC.lat+","+LOC.lng:""}
+function msg(k){var n=S.name||"Your friend",t=new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+if(k==="sos")return"🚨 SOS! "+n+" needs help right now. "+(LOC?"Location: "+link():"Location unavailable, please call me")+" (sent at "+t+"). Please call or come immediately.";
+if(k==="loc")return"📍 "+n+" is sharing their location: "+(LOC?link():"unavailable")+" (at "+t+")";
+if(k==="safe")return"✅ "+n+" is safe now. Thank you for being there.";
+if(k==="walk"){var w=S.walk||{};return"🚶 "+n+" is walking to "+(w.dest||"their destination")+" and expects to arrive by "+new Date(w.end).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})+". "+(LOC?"Start point: "+link():"")}
+return"Test message from SafeWalk. "+n+" added you as a trusted person."}
+function locate(cb){if(!navigator.geolocation){cb&&cb(false);return}navigator.geolocation.getCurrentPosition(function(p){LOC={lat:p.coords.latitude.toFixed(6),lng:p.coords.longitude.toFixed(6)};$("loc").textContent="📍 Location ready";$("loc").className="chip on";cb&&cb(true)},function(){$("loc").textContent="📍 Location blocked";cb&&cb(false)},{enableHighAccuracy:true,timeout:9000,maximumAge:15000})}
+var ac,osc,sirT;
+function alarmOn(){if(S.sound){try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();osc=ac.createOscillator();var g=ac.createGain();osc.type="sawtooth";g.gain.value=.22;osc.connect(g);g.connect(ac.destination);osc.start();var up=1;sirT=setInterval(function(){osc.frequency.setTargetAtTime(up?1000:600,ac.currentTime,.12);up=!up},420)}catch(e){}}if(navigator.vibrate)navigator.vibrate([400,200,400,200,400,200,400])}
+function alarmOff(){clearInterval(sirT);try{osc&&osc.stop()}catch(e){}osc=null;if(navigator.vibrate)navigator.vibrate(0)}
+function sendBtns(m){var e=encodeURIComponent(m);return S.contacts.length?S.contacts.map(function(c){var p=norm(c.p);return'<div class="ct"><div class="av">'+esc(c.n.charAt(0).toUpperCase())+'</div><div class="w"><b>'+esc(c.n)+'</b><small>'+esc(c.r)+'</small></div><a class="btn s" style="background:#25d366" href="https://wa.me/'+p+'?text='+e+'" target="_blank" rel="noopener">WhatsApp</a> <a class="btn s g" href="sms:+'+p+'?&body='+e+'">SMS</a> <a class="btn s g" href="tel:+'+p+'">📞</a></div>'}).join(""):'<p class="note">No trusted people yet. Add some in the People tab. For now, call 112.</p>'}
+function sosRender(){var m=msg("sos");$("smsg").textContent=m;$("scl").innerHTML=sendBtns(m);$("sst").textContent=LOC?"Location ready. Tap Send for each person.":"Getting your location…";$("ssms").style.display=S.contacts.length?"block":"none";$("sshr").style.display=navigator.share?"block":"none"}
+function trigger(){$("sosov").classList.add("on");sosRender();alarmOn();locate(function(){sosRender()})}
+$("ssms").onclick=function(){var n=S.contacts.map(function(c){return"+"+norm(c.p)}).join(",");location.href="sms:"+n+"?&body="+encodeURIComponent(msg("sos"))};
+$("sshr").onclick=function(){try{navigator.share({text:msg("sos")})}catch(e){}};
+$("ssafe").onclick=function(){alarmOff();$("sosov").classList.remove("on");toast("Alarm stopped. Glad you’re safe.");if(S.contacts.length)setTimeout(function(){if(confirm("Tell your people you’re safe?")){$("sshr").click&&0;navigator.share?navigator.share({text:msg("safe")}).catch(function(){}):window.open("https://wa.me/"+norm(S.contacts[0].p)+"?text="+encodeURIComponent(msg("safe")))}},300)};
+var CIRC=678.6,ring=$("ring"),h0=0,raf;
+function hstart(e){if(e.type==="keydown"&&e.key!=="Enter"&&e.key!==" ")return;if(h0)return;e.preventDefault();h0=performance.now();var st=h0;ac=ac||(function(){try{return new(window.AudioContext||window.webkitAudioContext)()}catch(x){}})();(function f(){if(!h0)return;var p=Math.min(1,(performance.now()-st)/2000);ring.style.strokeDashoffset=CIRC*(1-p);if(p>=1){h0=0;ring.style.strokeDashoffset=CIRC;trigger();return}raf=requestAnimationFrame(f)})()}
+function hend(){h0=0;cancelAnimationFrame(raf);ring.style.strokeDashoffset=CIRC}
+var sb=$("sos");["pointerdown","keydown"].forEach(function(t){sb.addEventListener(t,hstart)});["pointerup","pointerleave","pointercancel","keyup","blur"].forEach(function(t){sb.addEventListener(t,hend)});sb.addEventListener("contextmenu",function(e){e.preventDefault()});
+$("shl").onclick=function(){toast("Getting location…");locate(function(){var m=msg("loc");if(navigator.share){navigator.share({text:m}).catch(function(){})}else if(S.contacts.length){window.open("https://wa.me/"+norm(S.contacts[0].p)+"?text="+encodeURIComponent(m))}else toast("Add a trusted person first.")})};
+function rC(){$("cl").innerHTML=S.contacts.length?S.contacts.map(function(c,i){return'<div class="ct"><div class="av">'+esc(c.n.charAt(0).toUpperCase())+'</div><div class="w"><b>'+esc(c.n)+'</b><small>'+esc(c.r)+' · '+esc(c.p)+'</small></div><a class="btn s g" href="https://wa.me/'+norm(c.p)+'?text='+encodeURIComponent(msg("test"))+'" target="_blank" rel="noopener">Test</a><button class="x" data-rm="'+i+'" aria-label="Remove">×</button></div>'}).join(""):'<p class="note">Nobody yet. Add at least one person you trust.</p>'}
+$("cl").onclick=function(e){var i=e.target.dataset.rm;if(i!==undefined){S.contacts.splice(+i,1);sv();rC()}};
+$("cadd").onclick=function(){var n=$("cn").value.trim(),p=$("cp").value.trim();if(!n||p.replace(/\D/g,"").length<10){toast("Add a name and a valid phone number.");return}if(S.contacts.length>=6){toast("Up to 6 people for now.");return}S.contacts.push({n:n,p:p,r:$("cr").value});$("cn").value=$("cp").value="";sv();rC();toast("Added "+n)};
+$("ssv").onclick=function(){S.name=$("sn").value.trim();S.campus=$("sc").value.trim();S.sound=snd();sv();hi();toast("Settings saved")};
+function hi(){$("hi").textContent=S.name?"Walk safe, "+S.name.split(" ")[0]:"Walk safe tonight"}
+var wti;function fm(s){var m=Math.floor(s/60),x=s%60;return(m<10?"0":"")+m+":"+(x<10?"0":"")+x}
+function wshow(){var w=S.walk;$("wsetup").style.display=w?"none":"block";$("wrun").style.display=w?"block":"none";clearInterval(wti);if(!w)return;$("wto").textContent="Walking to "+w.dest;wti=setInterval(wtick,1000);wtick()}
+function wtick(){var left=Math.round((S.walk.end-Date.now())/1000);if(left<=0){clearInterval(wti);S.walk=null;sv();wshow();askChk();return}$("wt").textContent=fm(left)}
+var cci;function askChk(){var n=20;$("cc").textContent=n;$("chk").classList.add("on");if(navigator.vibrate)navigator.vibrate([300,150,300]);cci=setInterval(function(){n--;$("cc").textContent=n;if(n<=0){clearInterval(cci);$("chk").classList.remove("on");trigger()}},1000)}
+$("cok").onclick=function(){clearInterval(cci);$("chk").classList.remove("on");toast("Great, stay safe!")};
+$("wgo").onclick=function(){var d=$("wd").value.trim()||"my destination";S.walk={dest:d,end:Date.now()+wmin()*60000};sv();locate();wshow()};
+$("wsafe").onclick=function(){S.walk=null;sv();wshow();toast("Welcome home! Walk ended.")};
+$("wplus").onclick=function(){S.walk.end+=300000;sv();wtick()};
+$("wtell").onclick=function(){var m=msg("walk");if(navigator.share)navigator.share({text:m}).catch(function(){});else if(S.contacts.length)window.open("https://wa.me/"+norm(S.contacts[0].p)+"?text="+encodeURIComponent(m));else toast("Add a trusted person first.")};
+var ringI;function beep(){try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();var o=ac.createOscillator(),g=ac.createGain();o.frequency.value=720;g.gain.value=.15;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+.25)}catch(e){}}
+var ctI,fst;
+$("fgo").onclick=function(){var n=$("fnm").value.trim()||"Mom",d=fdel();toast(d?"Fake call in "+d+" seconds. Lock your screen if you like.":"Calling…");clearTimeout(fst);fst=setTimeout(function(){$("fn2").textContent=n;$("fav").textContent=n.charAt(0).toUpperCase();$("ft").textContent="mobile";$("fac").style.display="flex";$("facc").style.display="block";$("fk").classList.add("on");ringI=setInterval(function(){beep();if(navigator.vibrate)navigator.vibrate(400)},1200)},d*1000)};
+function fend(){clearInterval(ringI);clearInterval(ctI);$("fk").classList.remove("on");if(navigator.vibrate)navigator.vibrate(0)}
+$("fdec").onclick=fend;
+$("facc").onclick=function(){clearInterval(ringI);$("facc").style.display="none";var s=0;$("ft").textContent="00:00";ctI=setInterval(function(){s++;$("ft").textContent=fm(s)},1000)};
+var dp;addEventListener("beforeinstallprompt",function(e){e.preventDefault();dp=e;$("inst").style.display="block"});$("inst").onclick=function(){if(dp)dp.prompt()};
+$("sn").value=S.name;$("sc").value=S.campus;
+if(S.campus){var a=document.createElement("a");a.className="tile";a.href="tel:"+S.campus;a.innerHTML="<span>🏫</span>Campus security<small>"+esc(S.campus)+"</small>";document.querySelector("#help .grid2").appendChild(a)}
+hi();rC();wshow();
+if(!S.name&&!S.contacts.length)setTimeout(function(){toast("Set up: add your name in Help, and trusted people in People.")},900);
+})();
+</script>
+</body>
+</html>
